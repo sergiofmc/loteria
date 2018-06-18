@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html ng-app="Loteria">
+<head>
+	<meta charset="ISO-8859-1">
+    <title>Valor Cuota</title>
+    <style>
+        .ficha{
+            float: left;
+            width: 50px;
+            height: 50px;
+            border-style: solid;
+        }
+        .boton{
+            float: left;
+            width: 100px;
+            height: 100px;
+        }
+        .nuevoNumero{
+            position: relative;
+            left: 300px;
+            float: left;
+            width: 100px;
+            height: 100px;
+            border-style: solid;
+            border-radius: 50%;
+            background-color: aquamarine;
+            border-color: green;
+            text-align: center;
+        }
+        .saltoLinea{
+            position:relative;
+            left: 400px;
+            height: 110px;
+        }
+        .numeroGrande{
+            position: relative;
+            font-size: 45px;
+            text-align: center;
+            color: green;
+            width: 100%;
+            top: 24px;
+        }
+        .texto{
+            position: relative;
+            top: 9px;
+        }
+        .salto linea{
+            width: 50px;
+            height: 50px;
+            border-style: solid;
+        }
+        .elegido{
+            color:black;
+            font-size: 28px;
+            background-color: red;
+            vertical-align: middle;
+            align-content: center;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+        }
+        .noElegido{
+            color:gray;
+            padding-top:9px;
+            font-size: 28px;
+            vertical-align: middle;
+            align-content: center;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            
+        }
+    </style>
+	<script src="angular.min.js"></script>
+	<script>
+	(function () {
+		'use strict';
+
+		var ang = angular.module('Loteria', []);
+        ang.controller('LoteriaController', LoteriaController);
+        LoteriaController.$inject = ['$scope'];
+
+        function LoteriaController($scope){
+            $scope.listaInicio =[];
+            $scope.listaNumerosPendientes = {};
+            $scope.ultimoNumero;
+            $scope.listaNumerosElegidos;
+            $scope.indice = 0;
+
+            $scope.iniciarJuego = function(){
+                var total = 90;
+                $scope.listaNumerosPendientes = {};
+                for(var i=0; i<90; ++i){
+                    $scope.listaInicio.push(i+1);
+                    var nuevoNumero = new NumeroLoteria(Math.random(),i);
+                    while($scope.listaNumerosPendientes[nuevoNumero.posicion]!=undefined){
+                        nuevoNumero = new NumeroLoteria(Math.random(),i);
+                    }
+                    $scope.listaNumerosPendientes[nuevoNumero.posicion] = nuevoNumero;
+                }
+                $scope.listaNumerosElegidos = [];
+            };
+            $scope.sacarNumero = function(){
+                var sacado = $scope.indice++;
+                $scope.ultimoNumero = $scope.listaNumerosPendientes[sacado].numero;
+                $scope.listaNumerosPendientes[sacado].elegido = true;
+                $scope.listaNumerosElegidos[$scope.ultimoNumero] = $scope.listaNumerosPendientes[sacado];
+            };
+            $scope.iniciarJuego();
+        };
+            
+        function NumeroLoteria(aleatorio, numero){
+            this.posicion = parseInt(aleatorio * 91);
+            this.numero = numero+1;
+            this.elegido = false;
+
+        } 
+    })();
+</script>
+</head>
+<body ng-controller="LoteriaController">
+    <button class="boton" ng-click="sacarNumero()">Sacar Numero</button>
+    <div class="nuevoNumero">
+        <span class="numeroGrande">{{ultimoNumero}}</span>
+    </div>
+    <div class="saltoLinea">
+        
+    </div>
+    <div class="ficha" ng-repeat="indice in listaInicio">
+        <div class="elegido" ng-if="listaNumerosElegidos[indice]!=undefined">
+            <span class="texto">
+                {{indice}}
+            </span>
+        </div>
+        <div class="noElegido" ng-if="listaNumerosElegidos[indice]==undefined">
+                {{indice}}
+        </div>
+    </div>
+</body>
+</html>
+	
